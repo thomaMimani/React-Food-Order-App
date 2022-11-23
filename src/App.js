@@ -1,47 +1,27 @@
-import React, { useState, useEffect } from 'react';
-
-import Login from './components/Login/Login';
-import Home from './components/Home/Home';
-import MainHeader from './components/MainHeader/MainHeader';
-import AuthContext from './store/auth-context';
+import Header from "./components/Layout/Header";
+import {Fragment, useState} from 'react'
+import Meals from "./components/Meals/Meals";
+import Cart from "./components/Cart/Cart";
+import CartProvider from "./store/CartProvider";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    const storedUserLoggedInInformation = localStorage.getItem('isLoggedIn');
+  const[cartIsShown, setCartIsShown]=useState(false)
+const showCartHandler=()=>{
+  setCartIsShown(true)
+}
 
-    if (storedUserLoggedInInformation === '1') {
-      setIsLoggedIn(true);
-    }
-  }, []);
-
-  const loginHandler = (email, password) => {
-    // We should of course check email and password
-    // But it's just a dummy/ demo anyways
-    localStorage.setItem('isLoggedIn', '1');
-    setIsLoggedIn(true);
-  };
-
-  const logoutHandler = () => {
-    localStorage.removeItem('isLoggedIn');
-    setIsLoggedIn(false);
-  };
-
+const hideCartHandler=()=>{
+  setCartIsShown(false)
+}
   return (
-    <React.Fragment>
-      <AuthContext.Provider value={{
-    isLoggedIn:isLoggedIn,
-    onLogout:logoutHandler
-}}>
-
-      <MainHeader  onLogout={logoutHandler} />
-        <main>
-          {!isLoggedIn && <Login onLogin={loginHandler} />}
-          {isLoggedIn && <Home onLogout={logoutHandler} />}
-        </main>
-      </AuthContext.Provider>
-    </React.Fragment>
+    <CartProvider>
+      {cartIsShown&&<Cart onShow={showCartHandler} onHide={hideCartHandler}/>}
+      <Header onShow={showCartHandler} />
+      <main>
+        <Meals/>
+      </main>
+    </CartProvider>
   );
 }
 
